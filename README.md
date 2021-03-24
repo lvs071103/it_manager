@@ -14,3 +14,4 @@
 
 #### tickets
 <img src="https://github.com/lvs071103/it_manager/blob/master/images/1616566572284.jpg" width="800">
+<img src="https://github.com/lvs071103/it_manager/blob/master/images/WechatIMG1754.png" width="800">
