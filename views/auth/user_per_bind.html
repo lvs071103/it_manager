@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+<body>
+<div class="x-body">
+    <div class="layui-form-item">
+        <label for="username" class="layui-form-label">
+            <span class="x-red">*</span>用户
+        </label>
+        <div class="layui-input-inline">
+            <input type="text" id="username" name="username"
+                   class="layui-input" value="{{.user.UserName}}" readonly>
+        </div>
+        <div class="layui-form-mid layui-word-aux">
+            <span class="x-red">*</span>唯一的用户名
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>权限管理</label>
+        <div id="permission" class="demo-transfer"></div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label for="L_repass" class="layui-form-label"></label>
+        <input type="hidden" id="user_id" value="{{.user.Id}}">
+        <button  class="layui-btn" id="add" type="button">提交</button>
+    </div>
+
+</div>
+
+
+<script src="/static/layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['transfer', 'layer', 'util'], function() {
+        let $ = layui.$
+            , transfer = layui.transfer;
+
+
+        let uid = document.getElementById("user_id").value;
+        $.ajax({
+            url: '{{urlfor "UserController.GetPerJson"}}',
+            type: "GET",
+            data: {
+                "uid": uid,
+            },
+            success: function (data) {
+                let permissions = data["permissions"];
+                let selectedIds = data["selectedIds"];
+                //实例调用
+                transfer.render({
+                    elem: '#permission'
+                    ,data: permissions
+                    ,value: selectedIds
+                    ,title: ['未选中权限', '已选中权限']
+                    ,id: 'demo' //定义唯一索引
+                });
+            },
+            error: function (data) {
+                ions_alert.alertError(data)
+            },
+        });
+
+        let bindBtn = document.getElementById("add");
+        bindBtn.onclick = function () {
+            let permissions = transfer.getData('demo');
+            console.log(Object.values(permissions));
+            let permission = Object.values(permissions);
+            if (permissions.length === 0) {
+                alert("没有选中任何权限, 确认后将清除掉所有的权限记录");
+            }
+            let ids = "";
+            for (let i = 0, l=permission.length; i<l; i++) {
+                let perId = permission[i].value;
+                ids = perId + "&" + ids
+            }
+            let per_ids = ids.replace(/^&+|&+$/g, '').trim();
+            console.log(per_ids);
+            let user_id = document.getElementById("user_id").value;
+            $.ajax({
+                url: '{{urlfor "UserController.BindPer"}}',
+                type: "POST",
+                data: {
+                    "ids": per_ids,
+                    'user_id': user_id,
+                },
+                success: function (data) {
+                    if (data["code"] === 0) {
+                        ions_alert.alertSuccessToast(data["msg"]);
+                        setTimeout(closeLayer, 1000)
+                    }else{
+                        ions_alert.alertErrorToast(data["msg"]);
+                        setTimeout(closeLayer, 1000)
+                    }
+                },
+                error: function (){
+                    ions_alert.alertErrorToast("请求失败");
+                    setTimeout(closeLayer, 1000)
+                }
+            })
+        };
+
+        function closeLayer() {
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload()
+        }
+
+    });
+</script>
+
+</body>
+</html>

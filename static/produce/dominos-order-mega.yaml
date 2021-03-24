@@ -1,0 +1,128 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "13"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"extensions/v1beta1","kind":"Deployment","metadata":{"annotations":{"kubernetes.io/change-cause":"kubectl apply --filename=jenkins-publish/devb/kubernetes/deployment.yml --record=true"},"name":"deploy-dominos-order","namespace":"default"},"spec":{"minReadySeconds":15,"replicas":2,"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"}},"template":{"metadata":{"annotations":{"prometheus.io/path":"/prometheus","prometheus.io/port":"9001","prometheus.io/scrape":"true"},"labels":{"app":"dominos-order"}},"spec":{"containers":[{"args":["-XX:+PrintGCDetails"],"command":["/bin/bash","-c","exec java -Djasypt.encryptor.password=dominos_123456 -XX:MaxMetaspaceSize=256M -XX:MetaspaceSize=256M -Dspring.profiles.active=prod -Duser.timezone=GMT+08 -Djava.security.egd=file:/dev/./urandom -XX:MaxRAMFraction=2 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/application/heapdump -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/application/logs/gc.log -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -javaagent:/application/xowl/tools/xspider-agent/agent-bootstrap-1.4.1-RELEASE.jar -XX:+PrintGCDetails -DPERFMA_CLUSTER_NAME=dominos-order -Dserver.name=dominos-order -DPERFMA_AGENT_ID=$HOSTNAME -jar /application/dominos-order.jar"],"env":[{"name":"aliyun_logs_access","value":"stdout"},{"name":"aliyun_logs_access_tags","value":"stage=dominos-order-pro"}],"image":"harbor.dominos.com/images-prod/dominos-order:v20210105-2215-ops","imagePullPolicy":"Always","lifecycle":{"preStop":{"exec":{"command":["/bin/bash","-c","sleep 100"]}}},"name":"container-dominos-order","ports":[{"containerPort":9001,"protocol":"TCP"},{"containerPort":5005,"protocol":"TCP"}],"readinessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":2,"tcpSocket":{"port":9001},"timeoutSeconds":1},"resources":{"limits":{"cpu":4,"memory":"7Gi"},"requests":{"cpu":4,"memory":"7Gi"}},"volumeMounts":[{"mountPath":"/application/heapdump","name":"heapdump-mount"}]}],"hostAliases":[{"hostnames":["winnie.dashbrands.local"],"ip":"10.1.69.53"},{"hostnames":["cat.dashbrands.local"],"ip":"10.1.69.56"},{"hostnames":["cnsha2a198.dashbrands.local"],"ip":"10.1.69.198"}],"terminationGracePeriodSeconds":120,"volumes":[{"hostPath":{"path":"/application/heapdump"},"name":"heapdump-mount"}]}}}}
+    kubernetes.io/change-cause: kubectl apply --filename=jenkins-publish/devb/kubernetes/deployment.yml
+      --record=true
+  creationTimestamp: "2020-07-10T03:05:37Z"
+  generation: 14
+  labels:
+    app: dominos-order
+  name: deploy-dominos-order
+  namespace: default
+  resourceVersion: "52391371"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/deploy-dominos-order
+  uid: 7c23c824-52db-4e73-b803-b33e6885bccb
+spec:
+  minReadySeconds: 15
+  progressDeadlineSeconds: 2147483647
+  replicas: 2
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      app: dominos-order
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /prometheus
+        prometheus.io/port: "9001"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: dominos-order
+    spec:
+      containers:
+      - args:
+        - -XX:+PrintGCDetails
+        command:
+        - /bin/bash
+        - -c
+        - exec java -Djasypt.encryptor.password=dominos_123456 -XX:MaxMetaspaceSize=256M
+          -XX:MetaspaceSize=256M -Dspring.profiles.active=prod -Duser.timezone=GMT+08
+          -Djava.security.egd=file:/dev/./urandom -XX:MaxRAMFraction=2 -XX:+UnlockExperimentalVMOptions
+          -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/application/heapdump
+          -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/application/logs/gc.log
+          -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -javaagent:/application/xowl/tools/xspider-agent/agent-bootstrap-1.4.1-RELEASE.jar
+          -XX:+PrintGCDetails -DPERFMA_CLUSTER_NAME=dominos-order -Dserver.name=dominos-order
+          -DPERFMA_AGENT_ID=$HOSTNAME -jar /application/dominos-order.jar
+        env:
+        - name: aliyun_logs_access
+          value: stdout
+        - name: aliyun_logs_access_tags
+          value: stage=dominos-order-pro
+        image: harbor.dominos.com/images-prod/dominos-order:v20210105-2215-ops
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - sleep 100
+        name: container-dominos-order
+        ports:
+        - containerPort: 9001
+          protocol: TCP
+        - containerPort: 5005
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 2
+          tcpSocket:
+            port: 9001
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "4"
+            memory: 7Gi
+          requests:
+            cpu: "4"
+            memory: 7Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /application/heapdump
+          name: heapdump-mount
+      dnsPolicy: ClusterFirst
+      hostAliases:
+      - hostnames:
+        - winnie.dashbrands.local
+        ip: 10.1.69.53
+      - hostnames:
+        - cat.dashbrands.local
+        ip: 10.1.69.56
+      - hostnames:
+        - cnsha2a198.dashbrands.local
+        ip: 10.1.69.198
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - hostPath:
+          path: /application/heapdump
+          type: ""
+        name: heapdump-mount
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2020-12-31T04:26:46Z"
+    lastUpdateTime: "2020-12-31T04:26:46Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 14
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2

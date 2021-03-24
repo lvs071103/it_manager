@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]><![endif]-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+
+<body>
+<div class="x-body">
+    <form class="layui-form">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>位置</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="location">
+                    <input type="text" placeholder="请输入位置" value="{{.computer.Location}}"
+                           class="layui-input" id="location" lay-verify="required" name="location">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">输入位置比如:上海办公室</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备类型</label>
+            <div class="layui-input-inline"  style="width: 200px;">
+                <label for="deviceType">
+                    <select name="deviceType" id="deviceType">
+                        <option value="0">--无--</option>
+                        {{if .computer}}
+                            {{range .deviceTypes}}
+                                <option value="{{.Id}}" {{if eq $.computer.DeviceTypes.Id .Id}}selected{{end}}>{{.DeviceType}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .deviceTypes}}
+                                <option value="{{.Id}}">{{.DeviceType}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">设备类型，比如笔记本</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">品牌</label>
+            <div class="layui-input-inline"  style="width: 200px;">
+                <label for="brand">
+                    <select name="interest" name="brand" id="brand">
+                        <option value="0">--无--</option>
+                        {{if .computer}}
+                            {{range .brands}}
+                                <option value="{{.Id}}" {{if eq  $.computer.Brands.Id .Id}}selected{{end}}>{{.Name}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .brands}}
+                                <option value="{{.Id}}">{{.Name}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">设备品牌，比如DELL</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>设备名称</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="name">
+                    <input type="text" placeholder="请输入设备名称" value="{{.computer.Name}}"
+                           class="layui-input" id="name" name="name" lay-verify="required">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">设备名称</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>型号</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="module">
+                    <input type="text" placeholder="请输入设备型号" value="{{.computer.Model}}"
+                           class="layui-input" id="model" name="model" lay-verify="required">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">设备型号</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">使用者</label>
+            <div class="layui-input-inline"  style="width: 200px;">
+                <label for="user">
+                    <select name="user" id="user">
+                        <option value="0">--无--</option>
+                        {{if .computer}}
+                            {{range .users}}
+                                <option value="{{.Id}}" {{if eq $.computer.CurrentUser.Id .Id}}selected{{end}}>{{.UserName}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .users}}
+                                <option value="{{.Id}}">{{.UserName}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">当前使用者</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门</label>
+            <div class="layui-input-inline"  style="width: 200px;">
+                <label for="dept">
+                    <select name="dept" id="dept">
+                        <option value="0">--无--</option>
+                        {{if .computer}}
+                            {{range .depts}}
+                                <option value="{{.Id}}" {{if eq $.computer.Department.Id .Id}}selected{{end}}>{{.GroupName}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .depts}}
+                                <option value="{{.Id}}">{{.GroupName}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">使用者所在的部门</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>资产编号</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="asset_number">
+                    <input type="text" id="asset_number" name="asset_number" placeholder="输入设备资产编号"
+                           value="{{.computer.AssetNo}}" lay-verify="required" class="layui-input">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">资产编号这是唯一的</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">购买时间</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="purchase_date">
+                    <input type="text" id="purchase_date" name="purchase_date" value="{{.computer.PurchaseDate}}"
+                           placeholder="购买时间:Y-m-d" autocomplete="off" class="layui-input">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">购买时间</div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>SN</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="sn">
+                    <input type="text" id="sn" name="sn" value="{{.computer.SN}}" lay-verify="required"
+                           placeholder="产品序列号" autocomplete="off" class="layui-input">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">序列号</div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">快速服务代码</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="quick_service_code">
+                    <input type="text" id="quick_service_code" name="quick_service_code"
+                           value="{{.computer.QuickServiceCode}}" placeholder="产品快速服务代码"
+                           autocomplete="off" class="layui-input">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">快速服务代码，如果没有，可留空</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">质保期</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="warranty">
+                    <input type="text" id="warranty" name="warranty"
+                           placeholder="质保期:Y-m-d" value="{{.computer.Warranty}}" class="layui-input">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">产品质保期，如果没有，可留空</div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                <label for="is_active">
+                    {{if .computer}}
+                        <input name="is_active" id="is_active" type="radio" value="1" title="启用"
+                               {{if eq .computer.IsActive 1}}checked{{end}}/>
+                        <input name="is_active" id="is_active" type="radio" value="0" title="停用"
+                               {{if eq .computer.IsActive 0}}checked{{end}}/>
+                    {{else}}
+                        <input name="is_active" id="is_active" type="radio" value="1" title="启用" checked/>
+                        <input name="is_active" id="is_active" type="radio" value="0" title="停用"/>
+                    {{end}}
+                </label>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="gender" class="layui-form-label">是否报废</label>
+            <div class="layui-input-inline" style="width: 220px">
+                <label for="is_breakdown">
+                    {{if .computer}}
+                        <input type="checkbox" name="is_breakdown" class="layui-input"
+                               value="1" title="是否报废" {{if eq .computer.IsBreakdown 1}}checked{{end}}>
+                    {{else}}
+                        <input type="checkbox" name="is_breakdown" class="layui-input" value="1" title="是否报废">
+                    {{end}}
+                </label>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="gender" class="layui-form-label">仓库中</label>
+            <div class="layui-input-inline" style="width: 220px">
+                <label for="in_repository">
+                    {{if .computer}}
+                        <input type="checkbox" name="in_repository" class="layui-input"
+                               value="1" {{if eq .computer.InRepository 1}}checked{{end}} title="是否存于仓库中">
+                    {{else}}
+                        <input type="checkbox" name="in_repository" class="layui-input" value="1" title="是否存于仓库中">
+                    {{end}}
+                </label>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">网络地址</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="asset_number">
+                    <input type="text" id="ip_address" name="ip_address" placeholder="网络地址"
+                           value="{{.computer.IpAddress}}" class="layui-input">
+                </label>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <label for="remark">
+                    <textarea id="remark" placeholder="请输入内容" class="layui-textarea">{{.computer.Remark}}</textarea>
+                </label>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label"></label>
+            {{if eq .action "Add"}}
+                <button  class="layui-btn" lay-filter="add" lay-submit="" type="button">增加</button>
+            {{else}}
+                <button  class="layui-btn" lay-filter="edit" lay-submit="" type="button">提交</button>
+            {{end}}
+        </div>
+    </form>
+</div>
+<script>
+    layui.use(['form','layer'], function(){
+        let form = layui.form;
+
+        //监听提交
+        form.on('submit(add)', function(){
+            let location = document.getElementById("location").value;
+            let deviceType = document.getElementById("deviceType").value;
+            let brand = document.getElementById("brand").value;
+            let model = document.getElementById("model").value;
+            let users = document.getElementById("user").value;
+            let dept = document.getElementById("dept").value;
+            let asset_number = document.getElementById("asset_number").value;
+            let purchase_date = document.getElementById("purchase_date").value;
+            let sn = document.getElementById("sn").value;
+            let quick_service_code = document.getElementById("quick_service_code").value;
+            let warranty = document.getElementById("warranty").value;
+            let remark = document.getElementById("remark").value;
+            let ip_address = document.getElementById("ip_address").value;
+            let is_active = $("input[name='is_active']:checked").val();
+            let is_breakdown = $("input[name='is_breakdown']:checked").val();
+            let in_repository = $("input[name='in_repository']:checked").val();
+            $.ajax({
+                url:"{{urlfor "PCController.Add"}}",
+                type: "POST",
+                data:{
+                    "location": location,
+                    "deviceType": deviceType,
+                    "brand": brand,
+                    "model": model,
+                    "users": users,
+                    "dept": dept,
+                    "asset_number": asset_number,
+                    "purchase_date": purchase_date,
+                    "sn": sn,
+                    "quick_service_code": quick_service_code,
+                    "warranty": warranty,
+                    "remark": remark,
+                    "is_active": is_active,
+                    "is_breakdown": is_breakdown,
+                    "in_repository": in_repository,
+                    "ip_address": ip_address,
+                },
+                success: function (data) {
+                    if (data['code'] === 0){
+                        ions_alert.alertSuccessToast(data['msg']);
+                        setTimeout(reloadList, 1000);
+                    }else{
+                        ions_alert.alertErrorToast(data["msg"]);
+                        setTimeout(reloadList, 1000);
+                    }
+                },
+                error: function () {
+                    ions_alert.alertErrorToast("请求失败")
+                }
+            })
+        });
+        form.on('submit(edit)', function(){
+            let location = document.getElementById("location").value;
+            let deviceType = document.getElementById("deviceType").value;
+            let brand = document.getElementById("brand").value;
+            let model = document.getElementById("model").value;
+            let name = document.getElementById("name").value;
+            let users = document.getElementById("user").value;
+            let dept = document.getElementById("dept").value;
+            let asset_number = document.getElementById("asset_number").value;
+            let purchase_date = document.getElementById("purchase_date").value;
+            let sn = document.getElementById("sn").value;
+            let quick_service_code = document.getElementById("quick_service_code").value;
+            let warranty = document.getElementById("warranty").value;
+            let remark = document.getElementById("remark").value;
+            let ip_address = document.getElementById("ip_address").value;
+            let is_active = $("input[name='is_active']:checked").val();
+            let is_breakdown = $("input[name='is_breakdown']:checked").val();
+            let in_repository = $("input[name='in_repository']:checked").val();
+            $.ajax({
+                url:"{{urlfor "PCController.Edit"}}",
+                type: "POST",
+                data:{
+                    "id": {{.computer.Id}},
+                    "name": name,
+                    "location": location,
+                    "deviceType": deviceType,
+                    "brand": brand,
+                    "model": model,
+                    "users": users,
+                    "dept": dept,
+                    "asset_number": asset_number,
+                    "purchase_date": purchase_date,
+                    "sn": sn,
+                    "quick_service_code": quick_service_code,
+                    "warranty": warranty,
+                    "remark": remark,
+                    "is_active": is_active,
+                    "is_breakdown": is_breakdown,
+                    "in_repository": in_repository,
+                    "ip_address": ip_address,
+                },
+                success: function (data) {
+                    if (data['code'] === 0){
+                        ions_alert.alertSuccessToast(data['msg']);
+                        setTimeout(reloadList, 1000);
+                    }else{
+                        ions_alert.alertErrorToast(data["msg"]);
+                        setTimeout(reloadList, 1000);
+                    }
+                },
+                error: function () {
+                    ions_alert.alertErrorToast("请求失败")
+                }
+            })
+        });
+    });
+
+    function reloadList() {
+        let index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        parent.location.reload()
+    }
+</script>
+</body>
+
+</html>

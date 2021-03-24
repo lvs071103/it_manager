@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/layui/css/layui.css"  media="all">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+<body>
+<div class="x-body">
+    <form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">当前用户</label>
+        <div class="layui-input-inline">
+            <label for="username">
+                <select name="username" id="username" lay-filter="username">
+                    <option value="0">--请选择--</option>
+                    {{range .users}}
+                        <option value="{{.Id}}" {{if eq $.computer.CurrentUser.Id .Id}}selected{{end}}>{{.UserName}}</option>
+                    {{end}}
+                </select>
+            </label>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">先前使用者</label>
+        <div class="layui-input-block">
+            <label for="previous_users">
+            {{range .computer.PreUsers}}
+                <input type="checkbox" name="previous_user" value="{{.Id}}" checked title="{{.UserName}}">
+            {{end}}
+            {{range .userList}}
+                <input type="checkbox" name="previous_user" value="{{.Id}}" title="{{.UserName}}">
+            {{end}}
+            </label>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit="" lay-filter="bind">立即提交</button>
+        </div>
+    </div>
+</form>
+</div>
+<script src="/static/layui/layui.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/js/xadmin.js"></script>
+<script>
+    layui.use(['form','layer'], function(){
+        let form = layui.form;
+        form.on('submit(bind)', function() {
+            let id = "{{.computer.Id}}";
+            let uid = document.getElementById("username").value;
+            let arr = [];
+            $("input:checkbox[name='previous_user']:checked").each(function (i) {
+                arr[i] = $(this).val();
+            });
+            let previous_users = arr.join("&"); //将数组合并成字符串
+            $.ajax({
+                url: '{{urlfor "PCController.BindUser"}}',
+                type: "POST",
+                data: {
+                    "id": id,
+                    "uid": uid,
+                    "previous_users": previous_users
+                },
+                success: function (data) {
+                    if (data["code"] === 0) {
+                        ions_alert.alertSuccessToast(data["msg"]);
+                        setTimeout(reloadList, 1000)
+                    } else {
+                        ions_alert.alertErrorToast("绑定失败");
+                        setTimeout(reloadList, 1000)
+                    }
+                },
+                error: function () {
+                    ions_alert.alertErrorToast("请求失败");
+                    setTimeout(reloadList, 1000)
+                }
+            })
+        });
+    });
+    function reloadList() {
+        let index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        parent.location.reload()
+    }
+</script>
+
+</body>
+</html>

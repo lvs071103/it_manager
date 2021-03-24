@@ -1,0 +1,7 @@
+{
+  "dev":{
+    "appname" : "dominos_cmdb",
+    "runmode" : "dev",
+    "httpport" : 81
+  }
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4,
+    initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]><![endif]-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+
+<body>
+    <div class="x-body">
+        <form class="layui-form">
+
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    <span class="x-red">*</span>标题
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="title" class="layui-input"
+                           value="{{.ticket.Title}}" disabled style="cursor: not-allowed">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">问题描述</label>
+                <div class="layui-input-block">
+                    <textarea id="content" disabled style="cursor: not-allowed" class="layui-textarea">{{.ticket.Content}}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">优先级</label>
+                <div class="layui-input-block">
+                    <input name="policy" id="policy" type="radio" value="1" disabled style="cursor: not-allowed"
+                           title="重要" {{if eq .ticket.Policy 1 }}checked{{end}}>
+                    <input name="policy" id="policy" type="radio" value="0" disabled style="cursor: not-allowed"
+                           title="普通" {{if eq .ticket.Policy 0 }}checked{{end}}>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">处理结果</label>
+                <div class="layui-input-block">
+                    <textarea id="process_result" placeholder="请输入处理结果" class="layui-textarea">{{.ticket.ProcessResult}}</textarea>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">更改状态</label>
+                <div class="layui-input-inline"  style="width: 200px;">
+                    <select name="status" lay-filter="status" name="status" id="status">
+                        <option value="1" {{if eq .ticket.Status 1 }} selected{{end}}>已处理</option>
+                        <option value="2" {{if eq .ticket.Status 2 }} selected{{end}}>未分配</option>
+                        <option value="3" {{if eq .ticket.Status 3 }} selected{{end}}>已分配</option>
+                        <option value="4" {{if eq .ticket.Status 4 }} selected{{end}}>处理中</option>
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux"><span class="x-red">*</span>更改状态</div>
+            </div>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>设置处理进度</legend>
+            </fieldset>
+
+            <div class="layui-form-item layui-form-text">
+                <div class="layui-input-block">
+                    <div id="progress"></div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label"></label>
+                    <button  class="layui-btn" lay-filter="add" lay-submit="" type="button">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        let progress;
+
+        layui.use('slider', function(){
+            let slider = layui.slider;
+            //默认滑块
+            slider.render({
+                elem: '#progress'
+                ,value: {{.ticket.Progress}}
+                ,change: function(value){
+                    console.log(value); //动态获取滑块数值
+                    progress = value
+                }
+            });
+
+        });
+
+        layui.use(['form','layer'], function(){
+            let form = layui.form;
+            //监听提交
+            form.on('submit(add)', function(){
+                let process_result = document.getElementById("process_result").value;
+                let status = document.getElementById("status").value;
+                $.ajax({
+                    url:"{{urlfor "TicketController.Edit"}}",
+                    type: "POST",
+                    data:{
+                        "id": {{.ticket.Id}},
+                        "process_result": process_result,
+                        "status": status,
+                        "progress": progress,
+                    },
+                    success: function (data) {
+                        if (data['code'] === 0){
+                            ions_alert.alertSuccessToast(data['msg']);
+                            setTimeout(reloadList, 1000);
+                        }else{
+                            ions_alert.alertErrorToast(data["msg"]);
+                            setTimeout(reloadList, 1000);
+                        }
+                    },
+                    error: function () {
+                        ions_alert.alertErrorToast("请求失败")
+                    }
+                })
+            });
+        });
+
+        function reloadList() {
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload()
+        }
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]><![endif]-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+
+<body>
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">上级菜单</label>
+                <div class="layui-input-inline"  style="width: 200px;">
+                    <select name="interest" lay-filter="aihao" name="pid" id="pid">
+                        <option value="0">--无--</option>
+                        {{ if .menu}}
+                            {{range .menuList}}
+                                <option value="{{.Id}}" {{if eq $.menu.Pid .Id}}selected{{end}}>{{.Name}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .menuList}}
+                                <option value="{{.Id}}">{{.Name}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux">无上级权限请留空</div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单名称</label>
+                <div class="layui-input-inline" style="width:200px;">
+                    <input type="text" lay-verify="title" placeholder="请输入菜单名称"
+                           value="{{.menu.Name}}" class="layui-input" id="name" name="name">
+                </div>
+                <div class="layui-form-mid layui-word-aux">菜单名称</div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">URL地址</label>
+                <div class="layui-input-inline" style="width:200px;">
+                    <input type="text" id="urlfor" name="urlfor" lay-verify="title"
+                           placeholder="请输入URL地址" value="{{.menu.UrlFor}}" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">UrlFor规则添加</div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">权重</label>
+                <div class="layui-input-inline" style="width:200px;">
+                    <input type="text" id="weight" name="weight" lay-verify="title"
+                           placeholder="请输入数字权重" value="{{.menu.Weight}}" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">权重只能用数字，数值越大，排序越靠前</div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <textarea id="desc" placeholder="请输入内容" class="layui-textarea">{{.menu.Desc}}</textarea>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">图标选择</label>
+                <div class="layui-input-inline"  style="width: 200px;">
+                    <select name="interest" lay-filter="aihao" name="icons" id="icons">
+                        <option value="0">--无--</option>
+                        {{if .menu }}
+                            {{range .iconList}}
+                                <option value="{{.Id}}" {{if eq $.menu.Icons.Id .Id}}selected{{end}}>{{.Name}} | {{.ClassName}}</option>
+                            {{end}}
+                        {{else}}
+                            {{range .iconList}}
+                                <option value="{{.Id}}">{{.Name}} | {{.ClassName}}</option>
+                            {{end}}
+                        {{end}}
+                    </select>
+                </div>
+                <div class="layui-form-mid layui-word-aux">图标选择</div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否启用</label>
+                <div class="layui-input-block">
+                    {{if .menu }}
+                        <input name="is_active" id="is_active" type="radio" value="1"
+                               title="启用" {{if eq .menu.IsActive 1}}checked{{end}}>
+                        <input name="is_active" id="is_active" type="radio" value="0"
+                               title="停用" {{if eq .menu.IsActive 0}}checked{{end}}>
+                    {{else}}
+                        <input name="is_active" id="is_active" type="radio" value="1" title="启用" checked>
+                        <input name="is_active" id="is_active" type="radio" value="0" title="停用">
+                    {{end}}
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label"></label>
+                {{if eq .action "Add"}}
+                    <button  class="layui-btn" lay-filter="add" lay-submit="" type="button">添加</button>
+                {{else}}
+                    <button  class="layui-btn" lay-filter="edit" lay-submit="" type="button">提交</button>
+                {{end}}
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            let form = layui.form;
+
+            //监听提交
+            form.on('submit(add)', function(){
+                let pid = document.getElementById("pid").value;
+                let name = document.getElementById("name").value;
+                let urlfor = document.getElementById("urlfor").value;
+                let weight = document.getElementById("weight").value;
+                let desc = document.getElementById("desc").value;
+                let icons_id = document.getElementById("icons").value;
+                let is_active = $("input[name='is_active']:checked").val();
+                $.ajax({
+                    url:"{{urlfor "MenuController.Add"}}",
+                    type: "POST",
+                    data:{
+                        "pid": pid,
+                        "name": name,
+                        "urlfor": urlfor,
+                        "weight": weight,
+                        "desc": desc,
+                        "is_active": is_active,
+                        "icons_id": icons_id
+                    },
+                    success: function (data) {
+                        if (data['code'] === 0){
+                            ions_alert.alertSuccessToast(data['msg']);
+                            setTimeout(reloadList, 1000);
+                        }else{
+                            ions_alert.alertErrorToast(data["msg"]);
+                            setTimeout(reloadList, 1000);
+                        }
+                    },
+                    error: function () {
+                        ions_alert.alertErrorToast("请求失败")
+                    }
+                })
+            });
+            form.on('submit(edit)', function(){
+                alert(1111);
+                let pid = document.getElementById("pid").value;
+                let name = document.getElementById("name").value;
+                let urlfor = document.getElementById("urlfor").value;
+                let weight = document.getElementById("weight").value;
+                let desc = document.getElementById("desc").value;
+                let icons_id = document.getElementById("icons").value;
+                let is_active = $("input[name='is_active']:checked").val();
+                $.ajax({
+                    url:"{{urlfor "MenuController.Edit"}}",
+                    type: "POST",
+                    data:{
+                        "id": {{.menu.Id}},
+                        "pid": pid,
+                        "name": name,
+                        "urlfor": urlfor,
+                        "weight": weight,
+                        "desc": desc,
+                        "is_active": is_active,
+                        "icons_id": icons_id
+                    },
+                    success: function (data) {
+                        if (data['code'] === 0){
+                            ions_alert.alertSuccessToast(data['msg']);
+                            setTimeout(reloadList, 1000);
+                        }else{
+                            ions_alert.alertErrorToast(data["msg"]);
+                            setTimeout(reloadList, 1000);
+                        }
+                    },
+                    error: function () {
+                        ions_alert.alertErrorToast("请求失败")
+                    }
+                })
+            });
+        });
+
+        function reloadList() {
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload()
+        }
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,5 @@
+appname: dominos_cmdb
+httpport: 8080
+runmode: dev
+
+include: ["db_mysql.yaml", "data_init.yam"]

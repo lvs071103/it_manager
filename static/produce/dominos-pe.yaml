@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-dominos-pe
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: deploy-dominos-pe
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: deploy-dominos-pe
+    spec:
+      containers:
+      - name: deploy-dominos-pe
+        image: harbor.dominos.com/dc3-prod/deploy-dominos-pe:<TAG>
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 250M
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: dc3-registry-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-dominos-pe
+  labels:
+    run: deploy-dominos-pe
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: deploy-dominos-pe

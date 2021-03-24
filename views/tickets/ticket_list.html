@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4,
+    initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]><![endif]-->
+    <script type="text/javascript" src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+
+<body>
+<div class="x-nav">
+        <span class="layui-breadcrumb">
+          <a href="">首页</a>
+          <a href="">工单管理</a>
+          <a>
+            <cite>工单列表</cite></a>
+        </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);"
+       title="刷新"><i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+            <input class="layui-input" placeholder="提交时间" name="start" id="start">
+            <input class="layui-input" placeholder="截止时间" name="end" id="end">
+            <input type="text" id="searchStr" name="searchStr" value="{{.ss}}" placeholder="输入工单号"
+                   autocomplete="off" class="layui-input">
+            <button class="layui-btn" id="searchBtn"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn" onclick="x_admin_show('添加工单','{{urlfor "TicketController.Add"}}',900,600)">
+            <i class="layui-icon"></i>添加</button>
+        <span class="x-right" style="line-height:40px">共有数据：{{.count}} 条</span>
+    </xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </th>
+            <th>工单编号</th>
+            <th>工单标题</th>
+            <th>工单类型</th>
+            <th style="width: 15%">进度</th>
+            <th>提交帐号</th>
+            <th>提交时间</th>
+            <th>受理人员</th>
+            <th>工作状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{range .t_list}}
+            <tr>
+                <td>
+                    <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{{.Id}}'>
+                        <i class="layui-icon">&#xe605;</i>
+                    </div>
+                </td>
+                <td>{{.Id}}</td>
+                <td>{{substr .Title 0 10}}</td>
+                <td>{{.Category.Name}}</td>
+                <td>
+                    <div class="layui-progress" lay-showPercent="yes">
+                        <div class="layui-progress-bar" lay-percent="{{.Progress}}%" style="width: 100%;"></div>
+                    </div>
+                </td>
+                <td>{{.SubmitUser}}</td>
+                <td>{{.CreateTime}}</td>
+                <td>{{.ProcessUser}}</td>
+                <td nowrap="nowrap">
+                    {{if eq .Status 1 }}
+                        <span class="layui-btn layui-btn-normal layui-btn-mini">已处理</span>
+                    {{else if eq .Status 2}}
+                        <span class="layui-btn layui-btn-danger layui-btn-mini">未分配</span>
+                    {{else if eq .Status 3}}
+                        <span class="layui-btn layui-btn-primary layui-btn-mini">已分配</span>
+                    {{else}}
+                        <span class="layui-btn layui-btn-warm layui-btn-mini">处理中</span>
+                    {{end}}
+                </td>
+                <td class="td-manage">
+                    {{if eq .Status 1 3}}
+                        <a title="分配" class="layui-btn layui-btn-mini layui-btn-disabled">
+                            <i class="layui-icon">&#xe642;</i>分配</a>
+                    {{else}}
+                        <a title="分配" class="layui-btn layui-btn-mini layui-btn-normal"
+                           onclick="x_admin_show('分配','{{urlfor "TicketController.Assign"}}?id={{.Id}}' ,600,400)"
+                           href="javascript:;"><i class="layui-icon">&#xe642;</i>分配
+                        </a>
+                    {{end}}
+                    <a title="删除" class="layui-btn layui-btn-mini layui-btn-danger delete_btn"
+                       onclick="LogicDelete(this,'{{.Id}}')" href="javascript:;"><i class="layui-icon">&#xe640;</i>删除
+                    </a>
+                    <a title="详情" class="layui-btn layui-btn-mini"
+                       onclick="x_admin_show('详情', '{{urlfor "TicketController.Detail"}}?id={{.Id}}' ,800,600)"
+                       href="javascript:;"><i class="layui-icon">&#xe638;</i>详情
+                    </a>
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+    <div class="page">
+        <div>
+            <a class="prev" href="{{urlfor "TicketController.List"}}?page={{.firstPageNum}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">首页</a>
+            <a class="prev" href="{{urlfor "TicketController.List"}}?page={{.previousPage}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">上一页</a>
+            {{if .leftHasMore}}
+                <span>...</span>
+            {{end}}
+            {{range .leftPages}}
+                {{ if eq $.currentPage .}}
+                    <a class="current" href="{{urlfor "TicketController.List"}}?page={{.}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">{{.}}</a>
+                {{else}}
+                    <a href="{{urlfor "TicketController.List"}}?page={{.}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">{{.}}</a>
+                {{end}}
+            {{end}}
+
+            <span class="current">{{.currentPage}}</span>
+
+            {{range .rightPages}}
+                {{if eq $.currentPage .}}
+                    <a class="current" href="{{urlfor "TicketController.List"}}?page={{.}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">{{.}}</a>
+                {{else}}
+                    <a href="{{urlfor "TicketController.List"}}?page={{.}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">{{.}}</a>
+                {{end}}
+            {{end}}
+            {{if .rightHasMore}}
+                <span>...</span>
+            {{end}}
+            <a class="next" href="{{urlfor "TicketController.List"}}?page={{.nextPage}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">下一页</a>
+            <a class="next" href="{{urlfor "TicketController.List"}}?page={{.endPageNum}}{{if ne $.ss ""}}&ss={{$.ss}}{{end}}">末页</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use('laydate', function(){
+        let laydate = layui.laydate;
+
+        // 执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        // 执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+    /*用户-删除*/
+    function LogicDelete(obj, id) {
+        let url  = window.location.href;
+        layer.confirm('确认要删除吗', function (index) {
+            layer.close(index);
+            // 发起异步删除数据
+            $.ajax({
+                url: "{{urlfor "TicketController.Del"}}",
+                type: "POST",
+                data: {
+                    "id":id,
+                },
+                success:function (data) {
+                    ions_alert.alertSuccessToast(data['msg']);
+                    setTimeout(function () {
+                            window.location.href = url;
+                        }, 1000
+                    );
+                },
+                fail: function (data) {
+                    ions_alert.alertErrorToast(data['msg']);
+                    setTimeout(function () {
+                            window.location.href = url;
+                        }, 1000
+                    );
+                }
+            })
+        })
+    }
+    // 批量删除
+    function delAll () {
+        let ids = "";
+        let i = 0;
+        $(".layui-form-checked").each(function () {
+            let id = $(this).attr("data-id");
+            if (i===0){
+                ids = id
+            }else {
+                ids = ids + '&' + id;
+            }
+            i++
+        });
+        layer.confirm('确认要批量删除吗？',function(index){
+            layer.close(index);
+            // 发起异步删除数据
+            $.ajax({
+                url: "{{urlfor "TicketController.BatchDelete"}}",
+                type: "POST",
+                data: {
+                    "ids":ids,
+                },
+                success:function (data) {
+                    ions_alert.alertSuccessToast(data['msg']);
+                    setTimeout(reloadList, 1000);
+                },
+            })
+        });
+    }
+
+    function reloadList() {
+        window.location.reload()
+    }
+
+    let searchBtn = document.getElementById("searchBtn");
+    searchBtn.onclick = function (ev) {
+        ev.preventDefault();
+        let ss = document.getElementById("searchStr").value;
+        window.location.href = "{{urlfor "TicketController.List"}}?ss=" + ss
+    };
+
+</script>
+
+</body>
+</html>

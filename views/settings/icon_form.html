@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/font.css">
+    <link rel="stylesheet" href="/static/css/xadmin.css">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]><![endif]-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <link rel="stylesheet" href="/static/sweetalert/sweetalert.css">
+    <script src="/static/sweetalert/sweetalert.min.js"></script>
+    <script src="/static/sweetalert/ions_alert.js"></script>
+</head>
+
+<body>
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">图标名称</label>
+                <div class="layui-input-inline" style="width:200px;">
+                    <input type="text" placeholder="输入图标名称" value="{{.icon.Name}}" class="layui-input" id="name">
+                </div>
+                <div class="layui-form-mid layui-word-aux">图标名称不能重复</div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">类名</label>
+                <div class="layui-input-inline" style="width:200px;">
+                    <input type="text"  placeholder="请输入前端类名称" value="{{.icon.ClassName}}"
+                           class="layui-input" id="class_name">
+                </div>
+                <div class="layui-form-mid layui-word-aux">类名称不能重复</div>
+            </div>
+
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <textarea id="desc" placeholder="请输入描述内容" class="layui-textarea">{{.icon.Desc}}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否启用</label>
+                <div class="layui-input-block">
+                    {{if .icon }}
+                        <input name="is_active" id="is_active" type="radio" value="1"
+                               {{if eq .icon.IsActive 1}}checked{{end}} title="启用">
+                        <input name="is_active" id="is_active" type="radio" value="0"
+                               {{if eq .icon.IsActive 0}}checked{{end}} title="停用">
+                    {{else}}
+                        <input name="is_active" id="is_active" type="radio" value="1" title="启用" checked>
+                        <input name="is_active" id="is_active" type="radio" value="0" title="停用">
+                    {{end}}
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label"></label>
+                    {{if eq .action "Add"}}
+                        <button  class="layui-btn" lay-filter="add" lay-submit="" type="button">添加</button>
+                    {{else}}
+                        <button  class="layui-btn" lay-filter="edit" lay-submit="" type="button">提交</button>
+                    {{end}}
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            let form = layui.form;
+            //监听提交
+            form.on('submit(add)', function(){
+                let name = document.getElementById("name").value;
+                let class_name = document.getElementById("class_name").value;
+                let desc = document.getElementById("desc").value;
+                let is_active = $("input[name='is_active']:checked").val();
+                $.ajax({
+                    url:"{{urlfor "IconController.Add"}}",
+                    type: "POST",
+                    data:{
+                        "name": name,
+                        "class_name": class_name,
+                        "desc": desc,
+                        "is_active": is_active,
+                    },
+                    success: function (data) {
+                        if (data['code'] === 0){
+                            ions_alert.alertSuccessToast(data['msg']);
+                            setTimeout(reloadList, 1000);
+                        }else{
+                            ions_alert.alertErrorToast(data["msg"]);
+                            setTimeout(reloadList, 1000);
+                        }
+                    },
+                    error: function () {
+                        ions_alert.alertErrorToast("请求失败")
+                    }
+                })
+            });
+
+            form.on('submit(edit)', function(){
+                let iconId = {{.icon.Id}};
+                let name = document.getElementById("name").value;
+                let class_name = document.getElementById("class_name").value;
+                let desc = document.getElementById("desc").value;
+                let is_active = $("input[name='is_active']:checked").val();
+                $.ajax({
+                    url:"{{urlfor "IconController.Edit"}}",
+                    type: "POST",
+                    data:{
+                        "name": name,
+                        "class_name": class_name,
+                        "desc": desc,
+                        "is_active": is_active,
+                        "iconId": iconId,
+                    },
+                    success: function (data) {
+                        if (data['code'] === 0){
+                            ions_alert.alertSuccessToast(data['msg']);
+                            setTimeout(reloadList, 1000);
+                        }else{
+                            ions_alert.alertErrorToast(data["msg"]);
+                            setTimeout(reloadList, 1000);
+                        }
+                    },
+                    error: function () {
+                        ions_alert.alertErrorToast("请求失败")
+                    }
+                })
+            });
+        });
+
+        function reloadList() {
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload()
+        }
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,5 @@
+username: root
+password: qazwsx123
+db: dominos_cmdb2
+host: localhost
+port: 3306
