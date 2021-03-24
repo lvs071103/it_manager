@@ -7,7 +7,7 @@
 
 #### login:
 
-<img src="https://github.com/lvs071103/it_manager/blob/master/images/1616566391155.jpg" width="800">
+<img src="https://github.com/lvs071103/it_manager/blob/master/images/1616566391155.jpg" width="300">
 
 #### assets
 <img src="https://github.com/lvs071103/it_manager/blob/master/images/1616566538398.jpg" width="800">
