@@ -57,14 +57,19 @@ func (l *LdapAuthentication) Login() {
 		queryUsername := re.ReplaceAllString(username, "*")
 		fmt.Println(queryUsername)
 
-		// queryUserName := fmt.Sprintf("%s@dashbrands.local", username)
+		//firstName := strings.Split(username, ".")[0]
+		//lastName := strings.Split(username, ".")[1]
+		//fmt.Println(firstName, lastName)
 
-		fmt.Println(fmt.Sprintf("(&(objectClass=Person)(cn=%s*))", queryUsername))
+		filterRegexp := fmt.Sprintf("(&(objectCategory=Person)(userPrincipalName=%s@dominos*))", queryUsername)
+		fmt.Println(filterRegexp)
 		// Search for the given username
 		searchRequest := ldap.NewSearchRequest("ou=Dominos_China_Users,dc=dashbrands,dc=local",
 			ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-			fmt.Sprintf("(&(objectClass=organizationalPerson)(cn=%s*))", queryUsername),
-			[]string{"dn"},
+			//fmt.Sprintf("(&(objectClass=organizationalPerson)(cn=*%s*))", queryUsername),
+			//fmt.Sprintf("(&(objectClass=organizationalPerson)(|(cn=%s)(cn=%s %s)))",queryUsername,  firstName, lastName),
+			filterRegexp,
+			[]string{"sAMAccountName"},
 			nil,
 		)
 

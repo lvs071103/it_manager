@@ -119,6 +119,10 @@ func (p *PCController) Add() {
 		isActive, _ := p.GetInt("is_active")
 		isBreakdown, _ := p.GetInt("is_breakdown")
 		inRepository, _ := p.GetInt("in_repository")
+		cpu := p.GetString("cpu")
+		memory := p.GetString("memory")
+		disk := p.GetString("disk")
+		fmt.Println(cpu, memory, disk)
 		users := models.User{Id: usersId}
 		deptObj := models.Group{Id: deptId}
 		deviceTypes := models.DeviceType{Id: deviceTypeId}
@@ -126,7 +130,8 @@ func (p *PCController) Add() {
 		computer := models.Computer{Location: location, Name: name, DeviceTypes: &deviceTypes, Brands: &binds,
 			Model: model, CurrentUser: &users, Department: &deptObj, AssetNo: assetNumber, PurchaseDate: purchaseDate,
 			SN: sn, QuickServiceCode: quickServiceCode, Warranty: warranty, Remark: remark, IsActive: isActive,
-			IsBreakdown: isBreakdown, InRepository: inRepository, IpAddress: ipAddress,
+			IsBreakdown: isBreakdown, InRepository: inRepository, IpAddress: ipAddress, Cpu:cpu, Memory:memory,
+			Disk:disk,
 		}
 		o := orm.NewOrm()
 		_, err := o.Insert(&computer)
@@ -294,12 +299,16 @@ func (p *PCController) Edit() {
 		isActive, _ := p.GetInt("is_active")
 		isBreakdown, _ := p.GetInt("is_breakdown")
 		inRepository, _ := p.GetInt("in_repository")
+		cpu := p.GetString("cpu")
+		memory := p.GetString("memory")
+		disk := p.GetString("disk")
 		o := orm.NewOrm()
 		_, err := o.QueryTable(new(models.Computer)).Filter("id", id).Update(orm.Params{"location": location,
 			"device_types_id": deviceTypeId, "brands_id": brandId, "model": model, "current_user_id": usersId,
 			"department_id": deptId, "asset_no": assetNumber, "purchase_date": purchaseDate, "sn": sn,
 			"quick_service_code": quickServiceCode, "warranty": warranty, "is_active": isActive, "remark": remark,
-			"is_breakdown": isBreakdown, "in_repository": inRepository, "name": name,
+			"is_breakdown": isBreakdown, "in_repository": inRepository, "name": name, "cpu": cpu, "memory": memory,
+			"disk": disk,
 		})
 		if err == nil {
 			p.Data["json"] = map[string]interface{}{"code": 0, "msg": "更新成功"}

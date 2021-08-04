@@ -71,8 +71,6 @@
                 <th>型号</th>
                 <th>部门</th>
                 <th>用户</th>
-                <th>购买时间</th>
-                <th>质保时间</th>
                 <th>备注</th>
                 <th>状态</th>
                 <th>操作</th>
@@ -93,8 +91,6 @@
                     <td>{{.Model}}</td>
                     <td>{{if .Department}}{{.Department.GroupName}}{{else}}请编辑设置{{end}}</td>
                     <td>{{.CurrentUser.UserName}}</td>
-                    <td>{{if .PurchaseDate}}{{.PurchaseDate}}{{else}}请编辑设置{{end}}</td>
-                    <td>{{if .Warranty}}{{.Warranty}}{{else}}请编辑设置{{end}}</td>
                     <td>{{.Remark}}</td>
                     <td nowrap="nowrap">
                         {{if eq .IsActive 1 }}

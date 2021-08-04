@@ -168,10 +168,10 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="x-red">*</span>SN</label>
+            <label class="layui-form-label">SN</label>
             <div class="layui-input-inline" style="width:200px;">
                 <label for="sn">
-                    <input type="text" id="sn" name="sn" value="{{.computer.SN}}" lay-verify="required"
+                    <input type="text" id="sn" name="sn" value="{{.computer.SN}}"
                            placeholder="产品序列号" autocomplete="off" class="layui-input">
                 </label>
             </div>
@@ -259,6 +259,40 @@
             </div>
         </div>
 
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>cpu</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="cpu">
+                    <input type="text" placeholder="请输入cpu核心数" value="{{.computer.Cpu}}"
+                           class="layui-input" id="cpu" name="cpu">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">cpu核心数</div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>memory</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="memory">
+                    <input type="text" placeholder="输入内存大小" value="{{.computer.Memory}}"
+                           class="layui-input" id="memory" name="memory">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">主机内存大小</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>Disk</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="disk">
+                    <input type="text" placeholder="输入主机磁盘,多分区用逗号隔开" value="{{.computer.Disk}}"
+                           class="layui-input" id="disk" name="disk">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">主机硬盘大小</div>
+        </div>
+
 
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">备注</label>
@@ -302,6 +336,9 @@
             let is_active = $("input[name='is_active']:checked").val();
             let is_breakdown = $("input[name='is_breakdown']:checked").val();
             let in_repository = $("input[name='in_repository']:checked").val();
+            let cpu = document.getElementById("cpu").value;
+            let memory = document.getElementById("memory").value;
+            let disk = document.getElementById("disk").value;
             $.ajax({
                 url:"{{urlfor "PCController.Add"}}",
                 type: "POST",
@@ -322,6 +359,9 @@
                     "is_breakdown": is_breakdown,
                     "in_repository": in_repository,
                     "ip_address": ip_address,
+                    "cpu": cpu,
+                    "memory": memory,
+                    "disk": disk,
                 },
                 success: function (data) {
                     if (data['code'] === 0){
@@ -355,6 +395,9 @@
             let is_active = $("input[name='is_active']:checked").val();
             let is_breakdown = $("input[name='is_breakdown']:checked").val();
             let in_repository = $("input[name='in_repository']:checked").val();
+            let cpu = document.getElementById("cpu").value;
+            let memory = document.getElementById("memory").value;
+            let disk = document.getElementById("disk").value;
             $.ajax({
                 url:"{{urlfor "PCController.Edit"}}",
                 type: "POST",
@@ -377,6 +420,9 @@
                     "is_breakdown": is_breakdown,
                     "in_repository": in_repository,
                     "ip_address": ip_address,
+                    "cpu": cpu,
+                    "memory": memory,
+                    "disk": disk,
                 },
                 success: function (data) {
                     if (data['code'] === 0){

@@ -41,6 +41,9 @@ type Computer struct {
 	IpAddress        string      `orm:"column(ip_address);description(最近一次使用的IP地址);null"`
 	Remark           string      `orm:"column(remark);description(备注);null"`
 	PreUsers         []*User     `orm:"rel(m2m)"`
+	Cpu				 string      `orm:"column(cpu);size(64);description(主机cpu);null"`
+	Memory           string		 `orm:"column(memory);size(64);description(主机内存);null"`
+	Disk             string      `orm:"column(disk);size(255);description(主机磁盘);null"`
 }
 
 func (c *Computer) TableName() string {
