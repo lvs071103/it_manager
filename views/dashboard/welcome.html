@@ -26,11 +26,12 @@
             <div id="main" style="width: 100%;height:400px;"></div>
 
         </div>
-        <script src="http://cdn.bootcss.com/echarts/3.3.2/echarts.min.js" charset="utf-8"></script>
+        <!--<script src="http://cdn.bootcss.com/echarts/3.3.2/echarts.min.js" charset="utf-8"></script>-->
+        <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
         <script type="text/javascript">
             // 基于准备好的dom，初始化echarts实例
             let myChart = echarts.init(document.getElementById('main'));
-            let myChart1 = echarts.init(document.getElementById('main1'));
+            // let myChart1 = echarts.init(document.getElementById('main1'));
             $.ajax({
                 url: "{{urlfor "EchController.TicketsChart"}}",
                 type: "GET",
