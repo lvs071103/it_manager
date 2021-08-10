@@ -41,7 +41,7 @@
     <div class="x-body">
         <div class="layui-row">
             <form class="layui-form layui-col-md12 x-so">
-                <input type="text" id="searchStr" value="{{.ss}}"  placeholder="输入用户名"
+                <input type="text" id="searchStr" value="{{.ss}}"  placeholder="输入资产分组"
                        autocomplete="off" class="layui-input">
                 <button class="layui-btn"  lay-submit="" id="searchBtn">
                     <i class="layui-icon">&#xe615;</i>
@@ -69,7 +69,7 @@
                 <th>品牌</th>
                 <th>设备名</th>
                 <th>型号</th>
-                <th>部门</th>
+                <th>资产分组</th>
                 <th>用户</th>
                 <th>备注</th>
                 <th>状态</th>
@@ -89,8 +89,8 @@
                     <td>{{.Brands.Name}}</td>
                     <td>{{.Name}}</td>
                     <td>{{.Model}}</td>
-                    <td>{{if .Department}}{{.Department.GroupName}}{{else}}请编辑设置{{end}}</td>
-                    <td>{{.CurrentUser.UserName}}</td>
+                    <td>{{if .Groups}}{{.Groups.GroupName}}{{else}}请编辑设置{{end}}</td>
+                    <td>{{.UserName}}</td>
                     <td>{{.Remark}}</td>
                     <td nowrap="nowrap">
                         {{if eq .IsActive 1 }}

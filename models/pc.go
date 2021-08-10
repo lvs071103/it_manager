@@ -27,9 +27,9 @@ type Computer struct {
 	DeviceTypes      *DeviceType `orm:"rel(fk);description(设备类型)"`
 	Brands           *Brand      `orm:"rel(fk);description(品牌);"`
 	Model            string      `orm:"column(model);description(型号)"`
-	CurrentUser      *User       `orm:"rel(one);null"`
-	Department       *Group      `orm:"rel(fk);null"`
-	AssetNo          string      `orm:"column(asset_no);size(12);description(资产编号);null"`
+	UserName         string      `orm:"column(username);size(64);description(当前使用者);null"`
+	Groups           *Group      `orm:"rel(fk);null"`
+	AssetNo          string      `orm:"column(asset_no);size(16);description(资产编号);null"`
 	PurchaseDate     string      `orm:"column(purchase_date);type(datetime);description(购买时间);null"`
 	SN               string      `orm:"column(sn);size(20);description(序列号);null"`
 	QuickServiceCode string      `orm:"column(quick_service_code);description(快速服务代码);null"`
@@ -41,9 +41,10 @@ type Computer struct {
 	IpAddress        string      `orm:"column(ip_address);description(最近一次使用的IP地址);null"`
 	Remark           string      `orm:"column(remark);description(备注);null"`
 	PreUsers         []*User     `orm:"rel(m2m)"`
-	Cpu				 string      `orm:"column(cpu);size(64);description(主机cpu);null"`
-	Memory           string		 `orm:"column(memory);size(64);description(主机内存);null"`
+	Cpu              string      `orm:"column(cpu);size(64);description(主机cpu);null"`
+	Memory           string      `orm:"column(memory);size(64);description(主机内存);null"`
 	Disk             string      `orm:"column(disk);size(255);description(主机磁盘);null"`
+	OS               string      `orm:"column(os);size(64);description(操作系统);null"`
 }
 
 func (c *Computer) TableName() string {

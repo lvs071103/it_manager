@@ -103,38 +103,28 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">使用者</label>
-            <div class="layui-input-inline"  style="width: 200px;">
-                <label for="user">
-                    <select name="user" id="user">
-                        <option value="0">--无--</option>
-                        {{if .computer}}
-                            {{range .users}}
-                                <option value="{{.Id}}" {{if eq $.computer.CurrentUser.Id .Id}}selected{{end}}>{{.UserName}}</option>
-                            {{end}}
-                        {{else}}
-                            {{range .users}}
-                                <option value="{{.Id}}">{{.UserName}}</option>
-                            {{end}}
-                        {{end}}
-                    </select>
+            <label class="layui-form-label">当前使用者</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="module">
+                    <input type="text" placeholder="当前使用者" value="{{.computer.UserName}}"
+                           class="layui-input" id="username" name="username" lay-verify="required">
                 </label>
             </div>
             <div class="layui-form-mid layui-word-aux">当前使用者</div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">部门</label>
+            <label class="layui-form-label">资产分组</label>
             <div class="layui-input-inline"  style="width: 200px;">
                 <label for="dept">
                     <select name="dept" id="dept">
                         <option value="0">--无--</option>
                         {{if .computer}}
-                            {{range .depts}}
-                                <option value="{{.Id}}" {{if eq $.computer.Department.Id .Id}}selected{{end}}>{{.GroupName}}</option>
+                            {{range .groups}}
+                                <option value="{{.Id}}" {{if eq $.computer.Groups.Id .Id}}selected{{end}}>{{.GroupName}}</option>
                             {{end}}
                         {{else}}
-                            {{range .depts}}
+                            {{range .groups}}
                                 <option value="{{.Id}}">{{.GroupName}}</option>
                             {{end}}
                         {{end}}
@@ -260,7 +250,7 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="x-red">*</span>cpu</label>
+            <label class="layui-form-label">cpu</label>
             <div class="layui-input-inline" style="width:200px;">
                 <label for="cpu">
                     <input type="text" placeholder="请输入cpu核心数" value="{{.computer.Cpu}}"
@@ -272,7 +262,7 @@
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="x-red">*</span>memory</label>
+            <label class="layui-form-label">memory</label>
             <div class="layui-input-inline" style="width:200px;">
                 <label for="memory">
                     <input type="text" placeholder="输入内存大小" value="{{.computer.Memory}}"
@@ -283,7 +273,7 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="x-red">*</span>Disk</label>
+            <label class="layui-form-label">Disk</label>
             <div class="layui-input-inline" style="width:200px;">
                 <label for="disk">
                     <input type="text" placeholder="输入主机磁盘,多分区用逗号隔开" value="{{.computer.Disk}}"
@@ -291,6 +281,17 @@
                 </label>
             </div>
             <div class="layui-form-mid layui-word-aux">主机硬盘大小</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">OS</label>
+            <div class="layui-input-inline" style="width:200px;">
+                <label for="disk">
+                    <input type="text" placeholder="操作系统版本" value="{{.computer.OS}}"
+                           class="layui-input" id="os" name="os">
+                </label>
+            </div>
+            <div class="layui-form-mid layui-word-aux">操作系统</div>
         </div>
 
 
@@ -323,8 +324,9 @@
             let location = document.getElementById("location").value;
             let deviceType = document.getElementById("deviceType").value;
             let brand = document.getElementById("brand").value;
+            let name = document.getElementById("name").value;
             let model = document.getElementById("model").value;
-            let users = document.getElementById("user").value;
+            let username = document.getElementById("username").value;
             let dept = document.getElementById("dept").value;
             let asset_number = document.getElementById("asset_number").value;
             let purchase_date = document.getElementById("purchase_date").value;
@@ -339,6 +341,7 @@
             let cpu = document.getElementById("cpu").value;
             let memory = document.getElementById("memory").value;
             let disk = document.getElementById("disk").value;
+            let os = document.getElementById("os").value;
             $.ajax({
                 url:"{{urlfor "PCController.Add"}}",
                 type: "POST",
@@ -346,8 +349,9 @@
                     "location": location,
                     "deviceType": deviceType,
                     "brand": brand,
+                    "name": name,
                     "model": model,
-                    "users": users,
+                    "username": username,
                     "dept": dept,
                     "asset_number": asset_number,
                     "purchase_date": purchase_date,
@@ -362,6 +366,7 @@
                     "cpu": cpu,
                     "memory": memory,
                     "disk": disk,
+                    "os": os,
                 },
                 success: function (data) {
                     if (data['code'] === 0){
@@ -383,7 +388,7 @@
             let brand = document.getElementById("brand").value;
             let model = document.getElementById("model").value;
             let name = document.getElementById("name").value;
-            let users = document.getElementById("user").value;
+            let username = document.getElementById("username").value;
             let dept = document.getElementById("dept").value;
             let asset_number = document.getElementById("asset_number").value;
             let purchase_date = document.getElementById("purchase_date").value;
@@ -398,6 +403,7 @@
             let cpu = document.getElementById("cpu").value;
             let memory = document.getElementById("memory").value;
             let disk = document.getElementById("disk").value;
+            let os = document.getElementById("os").value;
             $.ajax({
                 url:"{{urlfor "PCController.Edit"}}",
                 type: "POST",
@@ -408,7 +414,7 @@
                     "deviceType": deviceType,
                     "brand": brand,
                     "model": model,
-                    "users": users,
+                    "username": username,
                     "dept": dept,
                     "asset_number": asset_number,
                     "purchase_date": purchase_date,
@@ -423,6 +429,7 @@
                     "cpu": cpu,
                     "memory": memory,
                     "disk": disk,
+                    "os": os,
                 },
                 success: function (data) {
                     if (data['code'] === 0){

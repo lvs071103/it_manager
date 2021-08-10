@@ -45,10 +45,11 @@ type Group struct {
 	Users       []*User       `orm:"reverse(many)"`
 	Desc        string        `orm:"column(desc);size(255);null"`
 	Permissions []*Permission `orm:"rel(m2m)"`
+	Computers   []*Computer   `orm:"reverse(many)"`
 }
 
 func (g *Group) TableName() string {
-	return "auth_group"
+	return "groups"
 }
 
 func init() {
@@ -56,24 +57,24 @@ func init() {
 }
 
 type User struct {
-	Id          int           `orm:"column(id);pk;auto"`
-	Groups      *Group        `orm:"rel(fk);description(用户组id);null"`
-	UserName    string        `orm:"column(username);unique;size(64);description(用户名)"`
-	Password    string        `orm:"column(password);size(32);description(登陆密码)"`
-	Email       string        `orm:"column(email);null;size(320);description(邮箱)"`
-	Age         int           `orm:"column(age);null;description(年龄)"`
-	Gender      int           `orm:"column(gender);null;description(性别:1代表男,2代表女)"`
-	Phone       int64         `orm:"column(phone);null;description(电话号码)"`
-	Address     string        `orm:"column(address);null;size(255);description(住址)"`
-	IsSuperUser int           `orm:"column(is_superuser);description(是否是管理员);default(0)"`
-	IsStaff     int           `orm:"column(is_staff);description(是否是员工);default(0)"`
-	IsActive    int           `orm:"column(is_active);description(1启用0停用);default(1)"`
-	IsDelete    int           `orm:"column(is_delete);description(1删除0未删除);default(0)"`
-	LastLogin   time.Time     `orm:"column(last_login);auto_now_add;type(datetime);description(最近登陆);null"`
-	CreateTime  time.Time     `orm:"column(create_time);auto_now;type(datetime);description(创建时间);null"`
-	ChineseName string        `orm:"column(chinese_name);description(中文名);size(64);null"`
-	Job         string        `orm:"column(job);description(职位);null"`
-	Computer    *Computer     `orm:"reverse(one)"`
+	Id          int       `orm:"column(id);pk;auto"`
+	Groups      *Group    `orm:"rel(fk);description(用户组id);null"`
+	UserName    string    `orm:"column(username);unique;size(64);description(用户名)"`
+	Password    string    `orm:"column(password);size(32);description(登陆密码)"`
+	Email       string    `orm:"column(email);null;size(320);description(邮箱)"`
+	Age         int       `orm:"column(age);null;description(年龄)"`
+	Gender      int       `orm:"column(gender);null;description(性别:1代表男,2代表女)"`
+	Phone       int64     `orm:"column(phone);null;description(电话号码)"`
+	Address     string    `orm:"column(address);null;size(255);description(住址)"`
+	IsSuperUser int       `orm:"column(is_superuser);description(是否是管理员);default(0)"`
+	IsStaff     int       `orm:"column(is_staff);description(是否是员工);default(0)"`
+	IsActive    int       `orm:"column(is_active);description(1启用0停用);default(1)"`
+	IsDelete    int       `orm:"column(is_delete);description(1删除0未删除);default(0)"`
+	LastLogin   time.Time `orm:"column(last_login);auto_now_add;type(datetime);description(最近登陆);null"`
+	CreateTime  time.Time `orm:"column(create_time);auto_now;type(datetime);description(创建时间);null"`
+	ChineseName string    `orm:"column(chinese_name);description(中文名);size(64);null"`
+	Job         string    `orm:"column(job);description(职位);null"`
+	//Computer    []*Computer     `orm:"reverse(many)"`
 	Computers   []*Computer   `orm:"reverse(many)"`
 	Messages    []*Message    `orm:"reverse(many)"`
 	Permissions []*Permission `orm:"rel(m2m)"`

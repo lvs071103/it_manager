@@ -29,14 +29,16 @@ func (p *PCController) List() {
 	}
 	offsetNum := limitNum * (currentPage - 1)
 	searchKey := p.GetString("ss")
+
 	if searchKey == "" {
 		// 搜索无值
 		count, _ = qs.Count()
 		_, _ = qs.Limit(limitNum).Offset(offsetNum).RelatedSel().All(&computers)
 	} else {
-		count, _ = qs.Filter("Name__contains", searchKey).Count()
-		_, _ = qs.Filter("Name_contains", searchKey).Limit(limitNum).Offset(offsetNum).
-			RelatedSel().All(&computers)
+		count, _ = qs.RelatedSel().Filter("Groups__GroupName__contains", searchKey).Count()
+		_, _ = qs.RelatedSel().Filter("Groups__GroupName__contains", searchKey).Limit(limitNum).
+			Offset(offsetNum).All(&computers)
+		// fmt.Print(computers)
 	}
 	pageNum := tools.GetPageNum(count, limitNum)
 	previousPage := 1
@@ -87,16 +89,16 @@ func (p *PCController) Json() {
 func (p *PCController) Add() {
 	if p.Ctx.Input.IsGet() {
 		var users []models.User
-		var depts []models.Group
+		var groups []models.Group
 		var deviceTypes []models.DeviceType
 		var brands []models.Brand
 		o := orm.NewOrm()
 		_, _ = o.QueryTable(new(models.User)).Filter("is_delete", 0).All(&users)
-		_, _ = o.QueryTable(new(models.Group)).Filter("is_delete", 0).All(&depts)
+		_, _ = o.QueryTable(new(models.Group)).Filter("is_delete", 0).All(&groups)
 		_, _ = o.QueryTable(new(models.DeviceType)).Filter("is_delete", 0).All(&deviceTypes)
 		_, _ = o.QueryTable(new(models.Brand)).Filter("is_delete", 0).All(&brands)
 		p.Data["users"] = users
-		p.Data["depts"] = depts
+		p.Data["groups"] = groups
 		p.Data["deviceTypes"] = deviceTypes
 		p.Data["brands"] = brands
 		p.Data["action"] = "Add"
@@ -107,7 +109,7 @@ func (p *PCController) Add() {
 		deviceTypeId, _ := p.GetInt("deviceType")
 		brandId, _ := p.GetInt("brand")
 		model := p.GetString("model")
-		usersId, _ := p.GetInt("users")
+		username := p.GetString("username")
 		deptId, _ := p.GetInt("dept")
 		assetNumber := p.GetString("name")
 		purchaseDate := p.GetString("purchase_date")
@@ -122,16 +124,16 @@ func (p *PCController) Add() {
 		cpu := p.GetString("cpu")
 		memory := p.GetString("memory")
 		disk := p.GetString("disk")
+		systemV := p.GetString("os")
 		fmt.Println(cpu, memory, disk)
-		users := models.User{Id: usersId}
 		deptObj := models.Group{Id: deptId}
 		deviceTypes := models.DeviceType{Id: deviceTypeId}
 		binds := models.Brand{Id: brandId}
 		computer := models.Computer{Location: location, Name: name, DeviceTypes: &deviceTypes, Brands: &binds,
-			Model: model, CurrentUser: &users, Department: &deptObj, AssetNo: assetNumber, PurchaseDate: purchaseDate,
+			Model: model, UserName: username, Groups: &deptObj, AssetNo: assetNumber, PurchaseDate: purchaseDate,
 			SN: sn, QuickServiceCode: quickServiceCode, Warranty: warranty, Remark: remark, IsActive: isActive,
-			IsBreakdown: isBreakdown, InRepository: inRepository, IpAddress: ipAddress, Cpu:cpu, Memory:memory,
-			Disk:disk,
+			IsBreakdown: isBreakdown, InRepository: inRepository, IpAddress: ipAddress, Cpu: cpu, Memory: memory,
+			Disk: disk, OS: systemV,
 		}
 		o := orm.NewOrm()
 		_, err := o.Insert(&computer)
@@ -150,7 +152,7 @@ func (p *PCController) BindUser() {
 		o := orm.NewOrm()
 		computer := models.Computer{}
 		var userList []models.User
-		var users []models.User
+		// var users []models.User
 		_ = o.QueryTable(new(models.Computer)).Filter("id", id).RelatedSel().One(&computer)
 		_, _ = o.LoadRelated(&computer, "PreUsers")
 		// 判断之前没有绑定，如果有绑定PreUsers > 0
@@ -161,20 +163,20 @@ func (p *PCController) BindUser() {
 			_, _ = o.QueryTable(new(models.User)).
 				Filter("is_delete", 0).Filter("is_active", 1).All(&userList)
 		}
-		_, _ = o.QueryTable(new(models.User)).All(&users)
+		//_, _ = o.QueryTable(new(models.User)).All(&users)
 		p.Data["computer"] = computer
 		p.Data["userList"] = userList
-		p.Data["users"] = users
+		// p.Data["users"] = users
 		p.TplName = "assets/pc_user_bind.html"
 	} else if p.Ctx.Input.IsPost() {
 		id, _ := p.GetInt("id")
-		uid, _ := p.GetInt("uid")
+		username := p.GetString("username")
 		preUserStr := p.GetString("previous_users")
 		preUserArr := strings.Split(preUserStr, "&")
 		o := orm.NewOrm()
 		computer := models.Computer{Id: id}
 		// 更新当前用户
-		_, _ = o.QueryTable(new(models.Computer)).Filter("id", id).Update(orm.Params{"current_user_id": uid})
+		_, _ = o.QueryTable(new(models.Computer)).Filter("id", id).Update(orm.Params{"username": username})
 		// 查询已绑定的数据并清理
 		m2m := o.QueryM2M(&computer, "PreUsers")
 		_, _ = m2m.Clear()
@@ -264,18 +266,19 @@ func (p *PCController) Edit() {
 	if p.Ctx.Input.IsGet() {
 		id, _ := p.GetInt("id")
 		var users []models.User
-		var depts []models.Group
+		var groups []models.Group
 		var deviceTypes []models.DeviceType
 		var brands []models.Brand
 		var computer models.Computer
 		o := orm.NewOrm()
 		_, _ = o.QueryTable(new(models.User)).Filter("is_delete", 0).All(&users)
-		_, _ = o.QueryTable(new(models.Group)).Filter("is_delete", 0).All(&depts)
+		_, _ = o.QueryTable(new(models.Group)).Filter("is_delete", 0).All(&groups)
 		_, _ = o.QueryTable(new(models.DeviceType)).Filter("is_delete", 0).All(&deviceTypes)
 		_, _ = o.QueryTable(new(models.Brand)).Filter("is_delete", 0).All(&brands)
 		_ = o.QueryTable(new(models.Computer)).Filter("id", id).Filter("is_delete", 0).RelatedSel().One(&computer)
+
 		p.Data["users"] = users
-		p.Data["depts"] = depts
+		p.Data["groups"] = groups
 		p.Data["deviceTypes"] = deviceTypes
 		p.Data["brands"] = brands
 		p.Data["computer"] = computer
@@ -288,7 +291,7 @@ func (p *PCController) Edit() {
 		name := p.GetString("name")
 		brandId, _ := p.GetInt("brand")
 		model := p.GetString("model")
-		usersId, _ := p.GetInt("users")
+		username := p.GetString("username")
 		deptId, _ := p.GetInt("dept")
 		assetNumber := p.GetString("name")
 		purchaseDate := p.GetString("purchase_date")
@@ -302,13 +305,14 @@ func (p *PCController) Edit() {
 		cpu := p.GetString("cpu")
 		memory := p.GetString("memory")
 		disk := p.GetString("disk")
+		systemV := p.GetString("os")
 		o := orm.NewOrm()
 		_, err := o.QueryTable(new(models.Computer)).Filter("id", id).Update(orm.Params{"location": location,
-			"device_types_id": deviceTypeId, "brands_id": brandId, "model": model, "current_user_id": usersId,
-			"department_id": deptId, "asset_no": assetNumber, "purchase_date": purchaseDate, "sn": sn,
+			"device_types_id": deviceTypeId, "brands_id": brandId, "model": model, "username": username,
+			"groups_id": deptId, "asset_no": assetNumber, "purchase_date": purchaseDate, "sn": sn,
 			"quick_service_code": quickServiceCode, "warranty": warranty, "is_active": isActive, "remark": remark,
 			"is_breakdown": isBreakdown, "in_repository": inRepository, "name": name, "cpu": cpu, "memory": memory,
-			"disk": disk,
+			"disk": disk, "os": systemV,
 		})
 		if err == nil {
 			p.Data["json"] = map[string]interface{}{"code": 0, "msg": "更新成功"}
@@ -322,21 +326,21 @@ func (p *PCController) Edit() {
 func (p *PCController) MyComputer() {
 	if p.Ctx.Input.IsGet() {
 		username := p.GetSession("username").(string)
-		currentUser := models.User{}
-		var users []models.User
+		// currentUser := models.User{}
+		// var users []models.User
 		var groups []models.Group
 		var deviceTypes []models.DeviceType
 		var brands []models.Brand
 		var computer models.Computer
 		o := orm.NewOrm()
-		_ = o.QueryTable(new(models.User)).Filter("username", username).One(&currentUser)
+		// _ = o.QueryTable(new(models.User)).Filter("username", username).One(&currentUser)
 		_, _ = o.QueryTable(new(models.Group)).Filter("is_delete", 0).All(&groups)
 		_, _ = o.QueryTable(new(models.DeviceType)).Filter("is_delete", 0).All(&deviceTypes)
 		_, _ = o.QueryTable(new(models.Brand)).Filter("is_delete", 0).All(&brands)
-		err := o.QueryTable(new(models.Computer)).Filter("current_user_id",
-			currentUser.Id).Filter("is_delete", 0).RelatedSel().One(&computer)
+		err := o.QueryTable(new(models.Computer)).Filter("username", username).Filter("is_delete", 0).
+			RelatedSel().One(&computer)
 		if err == nil {
-			p.Data["users"] = users
+			// p.Data["users"] = users
 			p.Data["groups"] = groups
 			p.Data["deviceTypes"] = deviceTypes
 			p.Data["brands"] = brands
@@ -362,7 +366,7 @@ func (p *PCController) MyComputer() {
 		warranty := p.GetString("warranty")
 		o := orm.NewOrm()
 		_, err := o.QueryTable(new(models.Computer)).Filter("id", id).Update(orm.Params{"location": location,
-			"device_types_id": deviceTypeId, "brands_id": brandId, "model": model, "department_id": deptId,
+			"device_types_id": deviceTypeId, "brands_id": brandId, "model": model, "groups_id": deptId,
 			"asset_no": assetNumber, "purchase_date": purchaseDate, "sn": sn, "quick_service_code": quickServiceCode,
 			"warranty": warranty, "name": name,
 		})

@@ -21,12 +21,8 @@
         <label class="layui-form-label">当前用户</label>
         <div class="layui-input-inline">
             <label for="username">
-                <select name="username" id="username" lay-filter="username">
-                    <option value="0">--请选择--</option>
-                    {{range .users}}
-                        <option value="{{.Id}}" {{if eq $.computer.CurrentUser.Id .Id}}selected{{end}}>{{.UserName}}</option>
-                    {{end}}
-                </select>
+                <input type="text" placeholder="当前用户" value="{{.computer.UserName}}"
+                       class="layui-input" id="username" name="username" lay-verify="required">
             </label>
         </div>
     </div>
@@ -59,7 +55,7 @@
         let form = layui.form;
         form.on('submit(bind)', function() {
             let id = "{{.computer.Id}}";
-            let uid = document.getElementById("username").value;
+            let username = document.getElementById("username").value;
             let arr = [];
             $("input:checkbox[name='previous_user']:checked").each(function (i) {
                 arr[i] = $(this).val();
@@ -70,7 +66,7 @@
                 type: "POST",
                 data: {
                     "id": id,
-                    "uid": uid,
+                    "username": username,
                     "previous_users": previous_users
                 },
                 success: function (data) {
