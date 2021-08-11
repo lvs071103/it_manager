@@ -105,13 +105,13 @@
                     {{end}}
                 </td>
                 <td class="td-manage">
-                    {{if eq .Status 2 3 }}
-                    <a title="处理" class="layui-btn layui-btn-mini layui-btn-normal"
-                       onclick="x_admin_show('处理','{{urlfor "TicketController.Edit"}}?id={{.Id}}' ,800,600)"
-                       href="javascript:;"><i class="layui-icon">&#xe642;</i>处理
-                    </a>
-                    {{else}}
+                    {{if eq .Progress 100 }}
                         <a title="处理" class="layui-btn layui-btn-mini layui-btn-disabled"><i class="layui-icon">&#xe642;</i>处理</a>
+                    {{else}}
+                        <a title="处理" class="layui-btn layui-btn-mini layui-btn-normal"
+                           onclick="x_admin_show('处理','{{urlfor "TicketController.Edit"}}?id={{.Id}}' ,800,600)"
+                           href="javascript:;"><i class="layui-icon">&#xe642;</i>处理
+                        </a>
                     {{end}}
                     <a title="删除" class="layui-btn layui-btn-mini layui-btn-danger delete_btn"
                        onclick="LogicDelete(this,'{{.Id}}')" href="javascript:;"><i class="layui-icon">&#xe640;</i>删除

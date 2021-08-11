@@ -198,7 +198,13 @@ func (t *TicketController) Edit() {
 		processUser := t.GetSession("username")
 		processResult := t.GetString("process_result")
 		status, _ := t.GetInt("status")
-		progress, _ := t.GetInt("progress")
+		// progress, _ := t.GetInt("progress")
+		var progress int
+		if status == 4 {
+			progress = 50
+		} else if status == 1 {
+			progress = 100
+		}
 		o := orm.NewOrm()
 		qs := o.QueryTable(new(models.Ticket))
 		_, err := qs.Filter("id", id).Update(orm.Params{
@@ -270,11 +276,14 @@ func (t *TicketController) Assign() {
 		user := models.User{}
 		o := orm.NewOrm()
 		qs := o.QueryTable(new(models.Ticket))
+		// 成功分配后，进度应更新至25%
 		_, err := qs.Filter("id", id).Update(orm.Params{
 			"ProcessUser": processUser,
 			"Status":      3,
 			"UpdateTime":  time.Now().Format("2006-01-01"),
+			"Progress":    25,
 		})
+		fmt.Println(err)
 		_ = o.QueryTable(new(models.User)).Filter("username", processUser).One(&user)
 		receiveUser := models.User{Id: user.Id}
 		returnMp := map[string]interface{}{}

@@ -105,14 +105,14 @@
                     {{end}}
                 </td>
                 <td class="td-manage">
-                    {{if eq .Status 1 3}}
-                        <a title="分配" class="layui-btn layui-btn-mini layui-btn-disabled">
-                            <i class="layui-icon">&#xe642;</i>分配</a>
-                    {{else}}
+                    {{if eq .Progress 0}}
                         <a title="分配" class="layui-btn layui-btn-mini layui-btn-normal"
                            onclick="x_admin_show('分配','{{urlfor "TicketController.Assign"}}?id={{.Id}}' ,600,400)"
                            href="javascript:;"><i class="layui-icon">&#xe642;</i>分配
                         </a>
+                    {{else}}
+                        <a title="分配" class="layui-btn layui-btn-mini layui-btn-disabled">
+                            <i class="layui-icon">&#xe642;</i>分配</a>
                     {{end}}
                     <a title="删除" class="layui-btn layui-btn-mini layui-btn-danger delete_btn"
                        onclick="LogicDelete(this,'{{.Id}}')" href="javascript:;"><i class="layui-icon">&#xe640;</i>删除
