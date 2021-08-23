@@ -69,8 +69,8 @@
                 <div class="layui-input-inline"  style="width: 200px;">
                     <select name="status" lay-filter="status" name="status" id="status">
                         <option value="1" {{if eq .ticket.Status 1 }} selected{{end}}>已完成</option>
-                        <option value="2" {{if eq .ticket.Status 2 }} selected{{end}}>未分配</option>
-                        <option value="3" {{if eq .ticket.Status 3 }} selected{{end}}>已分配</option>
+                        <option value="2" {{if eq .ticket.Status 2 }} selected{{end}}>重新分配</option>
+                        <!--<option value="3" {{if eq .ticket.Status 3 }} selected{{end}}>已分配</option>-->
                         <option value="4" {{if eq .ticket.Status 4 }} selected{{end}}>处理中</option>
                     </select>
                 </div>
@@ -92,21 +92,6 @@
         </form>
     </div>
     <script>
-        // let progress;
-
-        // layui.use('slider', function(){
-        //     let slider = layui.slider;
-        //     //默认滑块
-        //     slider.render({
-        //         elem: '#progress'
-        //         ,value: {{.ticket.Progress}}
-        //         ,change: function(value){
-        //             console.log(value); //动态获取滑块数值
-        //             progress = value
-        //         }
-        //     });
-        // });
-
         layui.use(['form','layer'], function(){
             let form = layui.form;
             //监听提交
