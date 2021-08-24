@@ -6,16 +6,20 @@ import json
 from http import cookiejar
 import socket
 import re
+import psutil
 
 is_active = None
-user_add_api = "http://172.19.1.51:8080/api/user/add"
-user_json_url = 'http://172.19.1.51:8080/api/user/json'
-user_login_api = "http://172.19.1.51:8080/login"
+base_url = "http://10.1.32.188"
+user_add_api = "{base}/api/user/add".format(base=base_url)
+user_json_url = '{base}/api/user/json'.format(base=base_url)
+user_login_api = "{base}/login".format(base=base_url)
 
 c = wmi.WMI()    
 my_system = c.Win32_ComputerSystem()[0]
 
 ip_address = socket.gethostbyname(socket.gethostname())
+
+print("host ip: " + ip_address)
 
 used_user = os.getenv('username')
 
@@ -73,11 +77,12 @@ else:
     user_ret_dict = detect_user_is_exist(query_list=do_get_json(url=user_json_url), username=used_user)
 
 
-deviceType_api_url = "http://172.19.1.51:8080/api/assets/device_type/add"
-deviceType_json_url = 'http://172.19.1.51:8080/api/assets/device_type/json'
+# 设备类型
+deviceType_api_url = "{base}/api/assets/device_type/add".format(base=base_url)
+deviceType_json_url = '{base}/api/assets/device_type/json'.format(base=base_url)
 
 deviceType_data = {
-    "deviceType": my_system.ChassisSKUNumber,
+    "deviceType": "Server",
     "desc": "设备类型",
     "is_active": 1,
     "is_delete": 0
@@ -99,18 +104,18 @@ def detect_device_type(res_list):
 
 
 device_type_dict = detect_device_type(res_list=device_type_response)
+
 if device_type_dict:
     print("device type already exist, id: %d" % device_type_dict["id"])
 else:
-    do_post_api(url=deviceType_api_url, req_dict=deviceType_data)
-    device_type_dict = detect_device_type(res_list=do_get_json(url=deviceType_json_url))
+    resp = do_post_api(url=deviceType_api_url, req_dict=deviceType_data)
+    print(resp.read().decode('utf-8'))
+    # device_type_dict = detect_device_type(res_list=do_get_json(url=deviceType_json_url))
 
-print(device_type_dict)
 
-
-# insert brand
-brand_api_url = "http://172.19.1.51:8080/api/assets/brand/add"
-brand_json_url = 'http://172.19.1.51:8080/api/assets/brand/json'
+# 品牌
+brand_api_url = "{base}/api/assets/brand/add".format(base=base_url)
+brand_json_url = '{base}/api/assets/brand/json'.format(base=base_url)
 
 brand_data = {
     "brand_name": my_system.Manufacturer.split(" ")[0],
@@ -133,19 +138,41 @@ def detect_brands_exists(res_list):
     return ret_msg
 
 
+# 检测品牌是否存在
 brands_dict = detect_brands_exists(res_list=brand_resp)
+
 if brands_dict:
     print("brand id: %d" % brands_dict["id"])
 else:
-    do_post_api(url=brand_api_url, req_dict=brand_data)
-    brands_dict = detect_brands_exists(res_list=do_get_json(url=brand_json_url))
+    resp = do_post_api(url=brand_api_url, req_dict=brand_data)
+    print(resp.read().decode('utf-8'))
+    # brands_dict = detect_brands_exists(res_list=do_get_json(url=brand_json_url))
 
-# insert pc
-pc_api_url = "http://172.19.1.51:8080/api/assets/pc/add"
-pc_json_url = 'http://172.19.1.51:8080/api/assets/pc/json'
+# 主机
+
+pc_api_url = "{base}/api/assets/pc/add".format(base=base_url)
+pc_json_url = '{base}/api/assets/pc/json'.format(base=base_url)
 
 if my_system.Status == "OK":
     is_active = 1
+
+
+cpu = psutil.cpu_count()
+memory = psutil.virtual_memory().total
+partitions = psutil.disk_partitions()
+
+p_list = list()
+for p in partitions:
+    if p.fstype == '':
+        continue
+    else:
+        p_tag = str(p.device).strip(':\\')
+        size = psutil.disk_usage('%s' % p.device).total
+        p_list.append(p_tag + "盘: " + str(size))
+
+# print(p_list)
+disk = ','.join(p_list)
+# print(disk)
 
 pc_data = {
     "location": "shanghai",
@@ -159,9 +186,16 @@ pc_data = {
     "users": user_ret_dict["id"],
     "remark": os.getenv('username') + "的办公电脑",
     "ip_address": ip_address,
+    "cpu": cpu,
+    "memory": memory,
+    "disk": disk
 }
 
+print(pc_data)
+
 pc_resp = do_get_json(url=pc_json_url)
+
+# print(pc_resp)
 
 
 def detect_pc_exists(res_list):
@@ -176,13 +210,12 @@ def detect_pc_exists(res_list):
 
 
 pc_dict = detect_pc_exists(res_list=pc_resp)
+# 如果主机名存在，输出已存在，否则添加
 if pc_dict:
     print("pc already exist pc_id: %d" % pc_dict["id"])
 else:
-    do_post_api(url=pc_api_url, req_dict=pc_data)
-    pc_dict = detect_pc_exists(res_list=do_get_json(url=pc_json_url))
-
-
-print("auto_collect complete!")
+    res = do_post_api(url=pc_api_url, req_dict=pc_data)
+    print(res.read().decode('utf-8'))
+    # pc_dict = detect_pc_exists(res_list=do_get_json(url=pc_json_url))
 
 sys.exit()

@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="72eb148c-9e18-414b-8517-6d674fdc815a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/tickets/ticket_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/views/tickets/ticket_edit.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,11 +45,20 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/auth/user_per_bind.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="812">
+            <state relative-caret-position="1812">
               <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/tickets/ticket_edit.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-5">
+              <caret line="72" column="105" selection-start-line="72" selection-start-column="105" selection-end-line="72" selection-end-column="105" />
             </state>
           </provider>
         </entry>
@@ -157,11 +165,6 @@
               <item name="it_manager" type="462c0819:PsiDirectoryNode" />
               <item name="controllers" type="462c0819:PsiDirectoryNode" />
               <item name="auth" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="it_manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="it_manager" type="462c0819:PsiDirectoryNode" />
-              <item name="routers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="it_manager" type="b2602c69:ProjectViewProjectNode" />
@@ -294,7 +297,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1680" height="1025" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2002442" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -308,9 +310,9 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32901832" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32901832" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.48435813" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50061053" side_tool="true" weight="0.32901832" />
+      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.4993895" weight="0.32901832" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4993895" weight="0.48435813" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50061053" side_tool="true" weight="0.48435813" />
       <window_info anchor="bottom" id="File Transfer" order="12" sideWeight="0.4993895" weight="0.32901832" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -577,13 +579,6 @@
         <state relative-caret-position="-2953" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/tickets/ticket_edit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="72" column="105" selection-start-line="72" selection-start-column="105" selection-end-line="72" selection-end-column="105" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/tickets/ticket_form.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1045" />
@@ -624,8 +619,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/auth/user_per_bind.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="812">
+        <state relative-caret-position="1812">
           <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/tickets/ticket_edit.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5">
+          <caret line="72" column="105" selection-start-line="72" selection-start-column="105" selection-end-line="72" selection-end-column="105" />
         </state>
       </provider>
     </entry>
