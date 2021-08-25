@@ -53,6 +53,7 @@
             <button class="layui-btn" onclick="x_admin_show('添加',{{urlfor "PCController.Add"}})">
                 <i class="layui-icon"></i>添加
             </button>
+            <a class="layui-btn" href="{{urlfor "PCController.Export2Excel"}}"><i class="layui-icon"></i>导出EXCEL</a>
             <span class="x-right" style="line-height:40px">共有数据：{{.count}} 条</span>
         </xblock>
 

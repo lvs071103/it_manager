@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/xuri/excelize/v2"
+	_ "github.com/xuri/excelize/v2"
+	"strconv"
+	_ "strconv"
 	"strings"
 )
 
@@ -378,4 +382,65 @@ func (p *PCController) MyComputer() {
 		}
 		p.ServeJSON()
 	}
+}
+
+func (p *PCController) Export2Excel() {
+	uName := p.GetSession("username").(string)
+	if !tools.HasPermission(uName, "view_computer") {
+		p.Redirect(beego.URLFor("ErrorController.Error403"), 302)
+	}
+	o := orm.NewOrm()
+	qs := o.QueryTable(new(models.Computer)).Filter("is_delete", 0)
+	var computers []models.Computer
+	_, _ = qs.RelatedSel().All(&computers)
+
+	titles := []string{
+		"位置", "主机名", "设备类型", "品牌", "型号", "当前使用者", "资产分组", "资产编号", "购买时间", "序列号", "快速服务代码",
+		"质保时间", "逻辑删除1删除0未删除", "1启用0停用", "1报废0正常", "1仓库中0仓库外", "IP地址", "备注", "主机cpu", "主机内存",
+		"主机磁盘", "操作系统",
+	}
+	cells := []string{
+		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
+		"V",
+	}
+	// 新建工作簿
+	f := excelize.NewFile()
+	index := f.NewSheet("Sheet1")
+
+	// 列标题赋值
+	for i, v := range titles {
+		_ = f.SetCellValue("Sheet1", cells[i]+"1", v)
+	}
+
+	var computerList [][]string
+
+	for _, element := range computers {
+		tmpArr := []string{element.Location, element.Name, element.DeviceTypes.DeviceType, element.Brands.Name,
+			element.Model, element.UserName, element.Groups.GroupName, element.AssetNo, element.PurchaseDate,
+			element.SN, element.QuickServiceCode, element.Warranty, strconv.Itoa(element.IsDelete),
+			strconv.Itoa(element.IsActive), strconv.Itoa(element.IsBreakdown), strconv.Itoa(element.InRepository),
+			element.IpAddress, element.Remark, element.Cpu, element.Memory, element.Disk, element.OS,
+		}
+		computerList = append(computerList, tmpArr)
+	}
+
+	for i, v := range computerList {
+		// i 行数
+		// v 行内容
+		columnNum := 0 // 列数
+		for _, e := range v {
+			pos := cells[columnNum] + strconv.Itoa(i+2)
+			fmt.Println(pos)
+			fmt.Println(e)
+			_ = f.SetCellValue("Sheet1", pos, e)
+			columnNum++
+		}
+	}
+
+	f.SetActiveSheet(index)
+	f.Path = "static/excels/computers.xlsx"
+	if err := f.Save(); err != nil {
+		fmt.Println(err)
+	}
+	p.Ctx.Output.Download(f.Path, "computers.xlsx")
 }

@@ -73,6 +73,7 @@ func init() {
 	beego.Router("/api/assets/device_type/isActive", &assets.DTypeController{}, "post:IsActive")
 	// pc
 	beego.Router("/api/assets/pc/list", &assets.PCController{}, "get:List")
+	beego.Router("/api/assets/pc/export2excel", &assets.PCController{}, "get:Export2Excel")
 	beego.Router("/api/assets/pc/json", &assets.PCController{}, "get:Json")
 	beego.Router("/api/assets/pc/add", &assets.PCController{}, "get:Add;post:Add")
 	beego.Router("/api/assets/pc/edit", &assets.PCController{}, "get:Edit;post:Edit")
